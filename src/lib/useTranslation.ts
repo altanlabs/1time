@@ -3,16 +3,13 @@ import { translations } from './translations';
 
 export type Language = 'en' | 'es' | 'ca' | 'fr' | 'pt' | 'it' | 'de';
 
-type TranslationKey = keyof typeof translations.en;
-type NestedTranslations = typeof translations.en;
-
-type DotNotation<T extends object> = {
-  [K in keyof T]: T[K] extends object
-    ? `${K & string}.${DotNotation<T[K]> & string}`
-    : K & string;
-}[keyof T];
-
-type TranslationDotKey = DotNotation<NestedTranslations>;
+type TranslationsType = typeof translations.en;
+type PathImpl<T, Key extends keyof T> = Key extends string
+  ? T[Key] extends Record<string, any>
+    ? `${Key}.${PathImpl<T[Key], keyof T[Key]> & string}` | Key
+    : Key
+  : never;
+type Path<T> = PathImpl<T, keyof T> & string;
 
 export function useTranslation() {
   const [currentLang, setCurrentLang] = useState<Language>('en');
@@ -24,7 +21,7 @@ export function useTranslation() {
     }
   }, []);
 
-  const t = (key: TranslationDotKey): string => {
+  const t = (key: Path<TranslationsType>) => {
     const keys = key.split('.');
     let value: any = translations[currentLang];
     
