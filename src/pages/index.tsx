@@ -18,9 +18,6 @@ export default function HomePage() {
     setIsLoading(true);
     try {
       const response = await createMessage(message);
-      if (!response.link) {
-        throw new Error('No link generated');
-      }
       setGeneratedLink(response.link);
       toast({
         title: "Success",
