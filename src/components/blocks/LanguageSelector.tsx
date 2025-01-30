@@ -5,9 +5,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useTranslation } from '@/lib/useTranslation';
+import { useTranslation, Language } from '@/lib/useTranslation';
 
-const languageNames = {
+const languageNames: Record<Language, string> = {
   en: 'English',
   es: 'Español',
   ca: 'Català',
@@ -20,8 +20,12 @@ const languageNames = {
 export function LanguageSelector() {
   const { currentLang, setCurrentLang, languages } = useTranslation();
 
+  const handleLanguageChange = (value: string) => {
+    setCurrentLang(value as Language);
+  };
+
   return (
-    <Select value={currentLang} onValueChange={setCurrentLang}>
+    <Select value={currentLang} onValueChange={handleLanguageChange}>
       <SelectTrigger className="w-[180px] bg-white/10 backdrop-blur-sm">
         <SelectValue />
       </SelectTrigger>
