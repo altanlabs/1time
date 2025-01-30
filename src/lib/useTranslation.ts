@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { translations } from './translations';
 
-export type Language = 'en' | 'es' | 'ca' | 'fr' | 'pt' | 'it' | 'de';
-
+export type Language = keyof typeof translations;
 type TranslationsType = typeof translations.en;
 type PathImpl<T, Key extends keyof T> = Key extends string
   ? T[Key] extends Record<string, any>
@@ -16,7 +15,7 @@ export function useTranslation() {
 
   useEffect(() => {
     const browserLang = navigator.language.split('-')[0] as Language;
-    if (Object.keys(translations).includes(browserLang)) {
+    if (browserLang in translations) {
       setCurrentLang(browserLang);
     }
   }, []);
