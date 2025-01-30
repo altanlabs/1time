@@ -77,7 +77,7 @@ export default function ViewMessagePage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-navy-900 via-indigo-900 to-purple-900 flex flex-col items-center p-4 sm:p-6 animate-gradient-x">
+    <div className="min-h-screen w-full bg-gradient-to-br from-navy-900 via-indigo-800 to-[#9333ea] flex flex-col items-center p-4 sm:p-6 animate-gradient-x">
       <div className="w-full max-w-2xl">
         <Card className="backdrop-blur-xl bg-white/10 border-white/20 p-6">
           {isLoading ? (
