@@ -18,8 +18,16 @@ export default function HomePage() {
     setIsLoading(true);
     try {
       const response = await createMessage(message);
+      if (!response.link) {
+        throw new Error('No link generated');
+      }
       setGeneratedLink(response.link);
+      toast({
+        title: "Success",
+        description: t('secureLink.created'),
+      });
     } catch (error) {
+      console.error('Error creating message:', error);
       toast({
         title: "Error",
         description: t('errors.createError'),
