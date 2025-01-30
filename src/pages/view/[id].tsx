@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Copy, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getMessage } from '@/lib/api';
+import { useTranslation } from '@/lib/useTranslation';
 
 export default function ViewMessagePage() {
   const { id } = useParams();
@@ -13,11 +14,12 @@ export default function ViewMessagePage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchMessage = async () => {
       try {
-        if (!id) throw new Error('No message ID provided');
+        if (!id) throw new Error(t('errors.noId'));
         const decryptedMessage = await getMessage(id);
         setMessage(decryptedMessage);
         
@@ -35,14 +37,14 @@ export default function ViewMessagePage() {
           window.removeEventListener('popstate', handlePopState);
         };
       } catch (err: any) {
-        setError(err.message || 'Failed to load message');
+        setError(err.message || t('errors.loadError'));
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchMessage();
-  }, [id, navigate]);
+  }, [id, navigate, t]);
 
   // Prevent leaving the page accidentally
   useEffect(() => {
@@ -64,13 +66,13 @@ export default function ViewMessagePage() {
     try {
       await navigator.clipboard.writeText(message);
       toast({
-        title: "Copied!",
-        description: "Message copied to clipboard",
+        title: "Success",
+        description: t('viewer.copied'),
       });
     } catch (err) {
       toast({
         title: "Error",
-        description: "Failed to copy message",
+        description: t('viewer.copyError'),
         variant: "destructive",
       });
     }
@@ -89,21 +91,21 @@ export default function ViewMessagePage() {
               <AlertTriangle className="h-12 w-12 mx-auto text-yellow-400" />
               <h2 className="text-xl font-semibold text-white">{error}</h2>
               <p className="text-white/80">
-                This message has expired or has already been viewed.
+                {t('viewer.expired')}
               </p>
               <Button
                 onClick={() => navigate('/')}
                 className="bg-white/20 hover:bg-white/30"
               >
-                Return Home
+                {t('viewer.return')}
               </Button>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-white">Secure Message</h2>
+                <h2 className="text-xl font-semibold text-white">{t('viewer.title')}</h2>
                 <div className="text-white/60 text-sm px-3 py-1 rounded-full bg-white/10">
-                  One-time view
+                  {t('viewer.oneTime')}
                 </div>
               </div>
               <div className="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
@@ -113,7 +115,7 @@ export default function ViewMessagePage() {
               </div>
               <div className="flex justify-between items-center">
                 <p className="text-white/60 text-sm">
-                  This message will be permanently deleted when you leave
+                  {t('viewer.deleteWarning')}
                 </p>
                 <Button
                   onClick={copyToClipboard}

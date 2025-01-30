@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Select,
   SelectContent,
@@ -6,27 +5,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useTranslation } from '@/lib/useTranslation';
 
-const languages = [
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Español' },
-  { code: 'ca', name: 'Català' },
-  { code: 'fr', name: 'Français' },
-  { code: 'pt', name: 'Português' },
-  { code: 'it', name: 'Italiano' },
-  { code: 'de', name: 'Deutsch' },
-];
+const languageNames = {
+  en: 'English',
+  es: 'Español',
+  ca: 'Català',
+  fr: 'Français',
+  pt: 'Português',
+  it: 'Italiano',
+  de: 'Deutsch',
+};
 
 export function LanguageSelector() {
-  const [currentLang, setCurrentLang] = useState('en');
-
-  useEffect(() => {
-    const browserLang = navigator.language.split('-')[0];
-    const supported = languages.find(lang => lang.code === browserLang);
-    if (supported) {
-      setCurrentLang(browserLang);
-    }
-  }, []);
+  const { currentLang, setCurrentLang, languages } = useTranslation();
 
   return (
     <Select value={currentLang} onValueChange={setCurrentLang}>
@@ -35,8 +27,8 @@ export function LanguageSelector() {
       </SelectTrigger>
       <SelectContent>
         {languages.map((lang) => (
-          <SelectItem key={lang.code} value={lang.code}>
-            {lang.name}
+          <SelectItem key={lang} value={lang}>
+            {languageNames[lang]}
           </SelectItem>
         ))}
       </SelectContent>

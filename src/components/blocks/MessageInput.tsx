@@ -3,6 +3,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Copy } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useTranslation } from '@/lib/useTranslation';
 
 interface MessageInputProps {
   onSubmit: (message: string) => void;
@@ -12,12 +13,13 @@ interface MessageInputProps {
 export function MessageInput({ onSubmit, isLoading }: MessageInputProps) {
   const [message, setMessage] = useState('');
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleSubmit = () => {
     if (!message.trim()) {
       toast({
         title: "Error",
-        description: "Please enter a message",
+        description: t('errors.noMessage'),
         variant: "destructive",
       });
       return;
@@ -28,7 +30,7 @@ export function MessageInput({ onSubmit, isLoading }: MessageInputProps) {
   return (
     <div className="space-y-4">
       <Textarea
-        placeholder="Enter your secure message here..."
+        placeholder={t('messageInput.placeholder')}
         className="min-h-[150px] resize-y bg-white/10 backdrop-blur-sm"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
@@ -42,10 +44,10 @@ export function MessageInput({ onSubmit, isLoading }: MessageInputProps) {
           {isLoading ? (
             <span className="flex items-center gap-2">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-              Creating secure link...
+              {t('messageInput.creating')}
             </span>
           ) : (
-            'Create Secure Link'
+            t('messageInput.createLink')
           )}
         </Button>
       </div>
@@ -59,18 +61,19 @@ interface SecureLinkProps {
 
 export function SecureLink({ link }: SecureLinkProps) {
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(link);
       toast({
-        title: "Copied!",
-        description: "Link copied to clipboard",
+        title: "Success",
+        description: t('secureLink.copied'),
       });
     } catch (err) {
       toast({
         title: "Error",
-        description: "Failed to copy link",
+        description: t('secureLink.copyError'),
         variant: "destructive",
       });
     }

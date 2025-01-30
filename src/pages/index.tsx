@@ -4,22 +4,30 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LanguageSelector } from '@/components/blocks/LanguageSelector';
 import { MessageInput, SecureLink } from '@/components/blocks/MessageInput';
 import { PasswordGenerator } from '@/components/blocks/PasswordGenerator';
+import { createMessage } from '@/lib/api';
+import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from '@/lib/useTranslation';
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedLink, setGeneratedLink] = useState('');
+  const { toast } = useToast();
+  const { t } = useTranslation();
 
-  const handleMessageSubmit = async (message: string) => {
+  const handleSubmit = async (message: string) => {
     setIsLoading(true);
-    // TODO: Implement actual message encryption and API call
-    setTimeout(() => {
-      setGeneratedLink('https://1time.share/m/abc123xyz789');
+    try {
+      const response = await createMessage(message);
+      setGeneratedLink(response.link);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: t('errors.createError'),
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
-  };
-
-  const handlePasswordGenerate = (password: string) => {
-    handleMessageSubmit(password);
+    }
   };
 
   return (
@@ -31,34 +39,34 @@ export default function HomePage() {
 
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Secure One-Time Message Sharing
+            {t('title')}
           </h1>
           <p className="text-white/80">
-            Share sensitive information securely. Messages self-destruct after being viewed.
+            {t('description')}
           </p>
         </div>
 
         <Card className="backdrop-blur-xl bg-white/10 border-white/20">
           <Tabs defaultValue="message" className="p-6">
             <TabsList className="grid w-full grid-cols-2 bg-white/10">
-              <TabsTrigger value="message">Manual Input</TabsTrigger>
-              <TabsTrigger value="password">Password Generator</TabsTrigger>
+              <TabsTrigger value="message">{t('tabs.message')}</TabsTrigger>
+              <TabsTrigger value="password">{t('tabs.password')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="message" className="space-y-6 mt-6">
-              <MessageInput onSubmit={handleMessageSubmit} isLoading={isLoading} />
+              <MessageInput onSubmit={handleSubmit} isLoading={isLoading} />
             </TabsContent>
 
             <TabsContent value="password" className="mt-6">
-              <PasswordGenerator onGenerate={handlePasswordGenerate} />
+              <PasswordGenerator onSubmit={handleSubmit} isLoading={isLoading} />
             </TabsContent>
 
             {generatedLink && !isLoading && (
               <div className="mt-6">
-                <h3 className="text-white mb-2">Your Secure Link:</h3>
+                <h3 className="text-white mb-2">{t('secureLink.title')}</h3>
                 <SecureLink link={generatedLink} />
                 <p className="text-white/60 text-sm mt-2">
-                  This link will expire in 24 hours or after being viewed once.
+                  {t('secureLink.expiry')}
                 </p>
               </div>
             )}
