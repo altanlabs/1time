@@ -23,7 +23,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex flex-col items-center p-4 sm:p-6 animate-gradient-x">
+    <div className="min-h-screen w-full bg-gradient-to-br from-navy-900 via-indigo-800 to-[#9333ea] flex flex-col items-center p-4 sm:p-6 animate-gradient-x">
       <div className="w-full max-w-4xl">
         <div className="flex justify-end mb-6">
           <LanguageSelector />

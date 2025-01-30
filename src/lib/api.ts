@@ -37,24 +37,39 @@ export const createMessage = async (content: string): Promise<CreateMessageRespo
     expires_at: expiresAt,
   });
 
+  // Generate relative URL
+  const relativeLink = `/view/${response.data.id}`;
+
   return {
     id: response.data.id,
-    link: `${window.location.origin}/view/${response.data.id}`,
+    link: relativeLink,
   };
 };
 
 export const getMessage = async (id: string): Promise<string> => {
-  const response = await axios.get<Message>(`${API_BASE_URL}/messages/${id}`);
-  
-  if (response.data.viewed) {
-    throw new Error('This message has already been viewed');
+  try {
+    const response = await axios.get<Message>(`${API_BASE_URL}/messages/${id}`);
+    
+    if (response.data.viewed) {
+      throw new Error('This message has already been viewed');
+    }
+
+    const decryptedMessage = decryptMessage(response.data.encrypted_content);
+
+    // Delete the message immediately after retrieving it
+    await deleteMessage(id);
+
+    return decryptedMessage;
+  } catch (error) {
+    throw error;
   }
+};
 
-  // Mark as viewed
-  await axios.patch(`${API_BASE_URL}/messages/${id}`, {
-    viewed: true,
-    view_count: response.data.view_count + 1,
-  });
-
-  return decryptMessage(response.data.encrypted_content);
+export const deleteMessage = async (id: string): Promise<void> => {
+  try {
+    await axios.delete(`${API_BASE_URL}/messages/${id}`);
+  } catch (error) {
+    console.error('Error deleting message:', error);
+    throw error;
+  }
 };
